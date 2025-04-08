@@ -40,12 +40,12 @@ function GameBoard() {
 function GameController(PlayerOne = "P1", PlayerTwo = "P2") {
     const board = GameBoard();
 
-    let players = [{ token: 1, name: PlayerOne, score: 0}, { token: 2, name: PlayerTwo, score:0 }];
+    let players = [{ token: 1, name: PlayerOne, score: 0 }, { token: 2, name: PlayerTwo, score: 0 }];
 
     let activePlayer = players[0];
 
-    
-    
+
+
     const getScorePlayer1 = () => players[0].score;
     const getScorePlayer2 = () => players[1].score;
 
@@ -80,7 +80,7 @@ function GameController(PlayerOne = "P1", PlayerTwo = "P2") {
         x[0][col].getValue() == x[2][col].getValue() && x[0][col].getValue() != 0;
 
     const checkDiagonal = (x) => {
-        return x[0][0].getValue() == x[1][1].getValue() && x[1][1].getValue() == x[2][2].getValue() && x[0][0].getValue()!= 0||
+        return x[0][0].getValue() == x[1][1].getValue() && x[1][1].getValue() == x[2][2].getValue() && x[0][0].getValue() != 0 ||
             x[0][2].getValue() == x[1][1].getValue() && x[1][1].getValue() == x[2][0].getValue() && x[0][2].getValue() != 0;
     }
 
@@ -111,7 +111,7 @@ function GameController(PlayerOne = "P1", PlayerTwo = "P2") {
 
     }
 
-    return { playRound, getActivePlayer, checkEnd, getBoard: board.getBoard, getScorePlayer1, getScorePlayer2};
+    return { playRound, getActivePlayer, checkEnd, getBoard: board.getBoard, getScorePlayer1, getScorePlayer2 };
 
 }
 
@@ -155,7 +155,7 @@ function ScreenController() {
         let score = document.querySelector(".score" + player);
         let currentScore = 0;
         console.log(player);
-        if(player == "1"){
+        if (player == "1") {
             score.textContent = "Score : " + game.getScorePlayer1();
         }
         else {
@@ -164,30 +164,39 @@ function ScreenController() {
 
     }
 
+    const checkAndDisplayWinner = (row, col) => {
+        let winner = game.checkEnd(row, col);
+        if (winner == "1") {
+
+            console.log("The winner is P1 !");
+            updateScore(winner);
+        }
+        else if (winner == "2") {
+            console.log("The winner is P2 !");
+            updateScore(winner);
+        }
+    }
+
+    const clickBoard = (cell) => {
+        let row = getRow(cell.id);
+        let col = getCol(cell.id);
+        let activePlayer = game.getActivePlayer();
+        if (game.playRound(row, col)) {
+            if (activePlayer.token == 1) {
+                circleFill(cell);
+            }
+            else {
+                xFill(cell);
+            }
+            checkAndDisplayWinner(row , col);
+
+        }
+    }
+
     const updateScreen = () => {
         cells.forEach((cell) => {
             cell.addEventListener("click", () => {
-                let row = getRow(cell.id);
-                let col = getCol(cell.id);
-                let activePlayer = game.getActivePlayer();
-                if (game.playRound(row, col)) {
-                    if (activePlayer.token == 1) {
-                        circleFill(cell);
-                    }
-                    else {
-                        xFill(cell);
-                    }
-                    let winner = game.checkEnd(row, col);
-                    if (winner == "1") {
-                        
-                        console.log("The winner is P1 !");
-                        updateScore(winner);
-                    }
-                    else if (winner == "2") {
-                        console.log("The winner is P2 !");
-                        updateScore(winner);
-                    }
-                }
+                clickBoard(cell);
             })
         })
     }
